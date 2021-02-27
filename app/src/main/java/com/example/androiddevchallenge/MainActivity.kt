@@ -113,17 +113,19 @@ fun ActionBtnGroup() {
     val showFilterDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     Row {
-        IconButton(onClick = {
-            showFilterDialog.value = true
-        }) {
+        IconButton(
+            onClick = {
+                showFilterDialog.value = true
+            }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
                 contentDescription = "filter"
             )
         }
-        IconButton(onClick = {
-            showSortDialog.value = true
-        }) {
+        IconButton(
+            onClick = {
+                showSortDialog.value = true
+            }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_sort_white_24dp),
                 contentDescription = "filter"
@@ -167,7 +169,8 @@ fun showDialog(type: Int, showFlag: MutableState<Boolean>) {
             Button(
                 onClick = {
                     showFlag.value = false
-                }) {
+                }
+            ) {
                 Text("Yes")
             }
         }
