@@ -1,4 +1,4 @@
-# Template repository
+    # Template repository
 
 Template repository for the Jetpack Compose [#AndroidDevChallenge](https://developer.android.com/dev-challenge).
 
