@@ -34,14 +34,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun PetListPreview() {
     MyTheme {
-        PetList(generatePetList())
+//        PetList(generatePetList(), {}, {_,_->})
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun PetList(
     pets: List<Pet>,
+    petGroup : Map<String, List<Pet>>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
@@ -56,14 +58,18 @@ fun PetList(
                 .fillMaxWidth()
                 .background(Color.LightGray)
         ) {
-            val nameGrouped = pets.groupBy { it.name }
-            val ageGrouped = pets.groupBy { it.age }
-            val sexGrouped = pets.groupBy { it.sex }
-            val speciesGrouped = pets.groupBy { it.species }
-            nameGrouped.forEach { initial, pets ->
-                item {
+            if (petGroup.isNotEmpty()) {
+                petGroup.keys.forEach { key ->
+                    stickyHeader {
+                        Text(key, modifier = Modifier.padding(vertical = 4.dp))
+                    }
+                    items(petGroup[key] as List<Pet>) {pet ->
+                        PetListItem(pet, modifier = Modifier.clickable {
+                            showPetDialog.value = true
+                        })
+                    }
                 }
-//                stickyHeader {  }
+            } else {
                 items(pets) { pet ->
                     PetListItem(pet, modifier = Modifier.clickable {
                         showPetDialog.value = true
@@ -187,7 +193,7 @@ fun ScrollToTopButton(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
         onClick = onClick,
         backgroundColor = Color.White
     ) {
-        Box{
+        Box {
             Image(
                 painter = painterResource(R.drawable.baseline_vertical_align_top_white_24dp),
                 contentDescription = "top btn",

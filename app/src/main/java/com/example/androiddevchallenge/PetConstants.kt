@@ -9,6 +9,14 @@ object PetConstants {
         const val FEMALE = 0
         const val MALE = 1
     }
+    object SortType {
+        const val AGE = "Age"
+        const val NAME = "Name"
+    }
+    object FilterType {
+        const val SEX = 0
+        const val SPECIES = 1
+    }
     val dogHeadImgs = listOf(
         "https://partyanimalsgame.com/static/img/avatars-02@2x.422e7ccd.jpg",
         "https://partyanimalsgame.com/static/img/avatars-05@2x.b4024682.jpg",

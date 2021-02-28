@@ -17,12 +17,11 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
@@ -33,8 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.androiddevchallenge.PetConstants.FilterType.SEX
+import com.example.androiddevchallenge.PetConstants.FilterType.SPECIES
 import com.example.androiddevchallenge.PetConstants.Sex.FEMALE
 import com.example.androiddevchallenge.PetConstants.Sex.MALE
 import com.example.androiddevchallenge.PetConstants.Species.CAT
@@ -43,55 +43,27 @@ import com.example.androiddevchallenge.ui.theme.MyTheme
 import com.example.androiddevchallenge.ui.theme.typography
 
 class MainActivity : AppCompatActivity() {
+    private val petViewModel by viewModels<PetViewModel>()
+
+    @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                MyApp()
+                petViewModel.createList()
+                MyApp(petViewModel)
             }
         }
     }
 }
 
-@Composable
-fun randomPet(): Pet {
-    val name = PetConstants.names.random()
-    val age = arrayOf(0, 1, 2, 3, 4, 5).random()
-    val species = arrayOf(CAT, DOG).random()
-    val sex = arrayOf(FEMALE, MALE).random()
-    val headUrl = remember(name) {
-        when (species) {
-            CAT -> {
-                PetConstants.catHeadImgs.random()
-            }
-            DOG -> {
-                PetConstants.dogHeadImgs.random()
-            }
-            else -> {
-                PetConstants.catHeadImgs.random()
-            }
-        }
-    }
-
-    return Pet(name, species, age, sex, headUrl)
-}
-
-@Composable
-fun generatePetList(): List<Pet> {
-    val listCount = arrayOf(10, 15, 20).random()
-    val petList = emptyList<Pet>().toMutableList()
-    for (i in 0..listCount) {
-        petList.add(randomPet())
-    }
-    petList.distinctBy { it.name }
-    return petList
-}
 
 // Start building your app here!
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun MyApp() {
+fun MyApp(petViewModel: PetViewModel) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Open))
     Scaffold(
         scaffoldState = scaffoldState,
@@ -101,27 +73,38 @@ fun MyApp() {
                 title = { Text("Pets") },
                 backgroundColor = colors.primary,
                 actions = {
-                    ActionBtnGroup()
+                    ActionBtnGroup(
+                        onSort = petViewModel::sortList,
+                        onFilter = petViewModel::filterList
+                    )
                 }
             )
         },
-    ) { PetList(pets = generatePetList()) }
+    ) {
+        PetList(
+            pets = petViewModel.petList,
+            petGroup = petViewModel.petGroup
+        )
+    }
 }
 
 @Composable
-fun ActionBtnGroup() {
+fun ActionBtnGroup(
+    onSort: (type: String) -> Unit,
+    onFilter: (type: Int, keyword: Int) -> Unit,
+) {
     val showFilterDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     Row {
-        IconButton(
-            onClick = {
-                showFilterDialog.value = true
-            }) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
-                contentDescription = "filter"
-            )
-        }
+//        IconButton(
+//            onClick = {
+//                showFilterDialog.value = true
+//            }) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
+//                contentDescription = "filter"
+//            )
+//        }
         IconButton(
             onClick = {
                 showSortDialog.value = true
@@ -133,15 +116,27 @@ fun ActionBtnGroup() {
         }
     }
     if (showFilterDialog.value) {
-        showDialog(0, showFilterDialog)
+        showDialog(0, showFilterDialog, onSort, onFilter)
     }
     if (showSortDialog.value) {
-        showDialog(1, showSortDialog)
+        showDialog(1, showSortDialog, onSort, onFilter)
     }
 }
 
 @Composable
-fun showDialog(type: Int, showFlag: MutableState<Boolean>) {
+fun showDialog(
+    type: Int, showFlag: MutableState<Boolean>,
+    onSort: (type: String) -> Unit,
+    onFilter: (type: Int, keyword: Int) -> Unit,
+) {
+    val sortOptions = listOf("Age", "Name")
+    val filterOptions = listOf(SEX, SPECIES)
+    val (selectedSortOption, onSortOptionSelected) = remember { mutableStateOf(sortOptions[0]) }
+    val (selectedFilterOption, onFilterOptionSelected) = remember { mutableStateOf(SEX) }
+    val (filterKeywordOption, onFilterKeywordSelected) = remember {
+        mutableStateOf(mapOf(0 to 0, 1 to 0).toMutableMap())
+    }
+
     AlertDialog(
         onDismissRequest = {
             // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -159,16 +154,24 @@ fun showDialog(type: Int, showFlag: MutableState<Boolean>) {
             )
         },
         text = {
-            if (type == 0) {
-                FilterCompose()
-            } else {
-                SortCompose()
-            }
+//            if (type == 0) {
+//                FilterCompose(
+//                    filterOptions, selectedFilterOption, onFilterOptionSelected,
+//                    filterKeywordOption, onFilterKeywordSelected
+//                )
+//            } else {
+                SortCompose(sortOptions, selectedSortOption, onSortOptionSelected)
+//            }
         },
         confirmButton = {
             Button(
                 onClick = {
                     showFlag.value = false
+                    if (type == 0) {
+                        onFilter(selectedFilterOption, filterKeywordOption[selectedFilterOption]!!)
+                    } else {
+                        onSort(selectedSortOption)
+                    }
                 }
             ) {
                 Text("Yes")
@@ -178,57 +181,99 @@ fun showDialog(type: Int, showFlag: MutableState<Boolean>) {
 }
 
 @Composable
-fun FilterCompose() {
-    val radioOptions = listOf("Age", "Sex", "Species")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[1]) }
+fun FilterCompose(
+    filterTypeOptions: List<Int>,
+    selectedFilterType: Int,
+    onFilterTypeSelected: (Int) -> Unit,
+    selectedFilterKeyword: MutableMap<Int, Int>,
+    onFilterKeywordSelected: (MutableMap<Int, Int>) -> Unit,
+) {
+    val filterTypeOptionString = listOf("Sex", "Species")
+    val sexOption = listOf(FEMALE, MALE)
+    val sexOptionString = listOf("Female", "Male")
+    val speciesOption = listOf(CAT, DOG)
+    val speciesOptionString = listOf("Cat", "Dog")
     Column {
-        radioOptions.forEach { text ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = {
-                            onOptionSelected(text)
-                        }
-                    )
-                    .padding(horizontal = 16.dp)
+        filterTypeOptionString.forEach { filterTypeString ->
+            Column(
+                modifier = Modifier.padding(bottom = 8.dp)
             ) {
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = { onOptionSelected(text) }
-                )
                 Text(
-                    text = text,
-                    style = typography.body1.merge(),
-                    modifier = Modifier.padding(start = 16.dp)
+                    text = filterTypeString,
+                    style = typography.h6.merge(),
                 )
+                val index = filterTypeOptionString.indexOf(filterTypeString)
+                val option = if (index == SEX) {
+                    sexOption
+                } else {
+                    speciesOption
+                }
+                val optionString = if (index == SEX) {
+                    sexOptionString
+                } else {
+                    speciesOptionString
+                }
+                Row {
+                    optionString.forEach { filterKeywordString -> //0,1 / 0,1
+                        val keyIndex = optionString.indexOf(filterKeywordString)
+                        Row(Modifier
+                            .selectable(
+                                selected = (filterKeywordString == optionString[keyIndex]),
+                                onClick = {
+                                    onFilterTypeSelected(index)
+                                    selectedFilterKeyword[index] = keyIndex
+//                                    onFilterKeywordSelected(selectedFilterKeyword)
+                                    println("select filter type: $selectedFilterType")
+                                    println("select filter keyword: $selectedFilterKeyword")
+                                    println("filter keyword: $filterKeywordString")
+                                    println("light: ${filterKeywordString == optionString[keyIndex]}")
+                                }
+                            )
+                            .padding(end = 16.dp)
+                        ) {
+                            Switch(
+                                checked = selectedFilterKeyword[index] == keyIndex,
+                                onCheckedChange = {
+                                    onFilterTypeSelected(index)
+                                    selectedFilterKeyword[index] = keyIndex
+                                    onFilterKeywordSelected(selectedFilterKeyword)
+                                }
+                            )
+                            Text(
+                                text = filterKeywordString,
+                                style = typography.body1.merge(),
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun SortCompose() {
-    val radioOptions = listOf("Age", "Name")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+fun SortCompose(
+    sortOptions: List<String>, selectedSortOption: String,
+    onSortOptionSelected: (String) -> Unit
+) {
     Column {
-        radioOptions.forEach { text ->
+        sortOptions.forEach { text ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected = (text == selectedOption),
+                        selected = (text == selectedSortOption),
                         onClick = {
-                            onOptionSelected(text)
+                            onSortOptionSelected(text)
                         }
                     )
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = { onOptionSelected(text) }
+                    selected = (text == selectedSortOption),
+                    onClick = { onSortOptionSelected(text) }
                 )
                 Text(
                     text = text,
@@ -239,20 +284,20 @@ fun SortCompose() {
     }
 }
 
-@ExperimentalAnimationApi
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
+//@ExperimentalAnimationApi
+//@Preview("Light Theme", widthDp = 360, heightDp = 640)
+//@Composable
+//fun LightPreview() {
+//    MyTheme {
+//        MyApp(null)
+//    }
+//}
 
-@ExperimentalAnimationApi
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
-    }
-}
+//@ExperimentalAnimationApi
+//@Preview("Dark Theme", widthDp = 360, heightDp = 640)
+//@Composable
+//fun DarkPreview() {
+//    MyTheme(darkTheme = true) {
+//        MyApp()
+//    }
+//}
