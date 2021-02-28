@@ -92,7 +92,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int, navigateBack: () -> 
                 ) {
                     Text(
                         text = "Yes I want it!",
-                        color = colors.onPrimary,
+                        color = Color.White
                     )
                 }
             }
@@ -115,7 +115,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int, navigateBack: () -> 
                                 showPetDialog.value = false
                                 gotPet.value = true
                             }) {
-                            Text("Yes", color = colors.onPrimary)
+                            Text("Yes", color = Color.White)
                         }
                     },
                     dismissButton = {
@@ -123,7 +123,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int, navigateBack: () -> 
                             onClick = {
                                 showPetDialog.value = false
                             }) {
-                            Text("Not sure now", color = colors.onPrimary)
+                            Text("Not sure now", color = Color.White)
                         }
                     }
                 )

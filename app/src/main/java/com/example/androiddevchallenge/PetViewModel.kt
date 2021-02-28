@@ -50,6 +50,7 @@ class PetViewModel : ViewModel() {
     }
 
     fun filterList(sexType: Int, speciesType: Int) {
+        petGroup = HashMap()
         petList = when (sexType) {
             MALE, FEMALE -> {
                 rawList.filter { it.sex == sexType }

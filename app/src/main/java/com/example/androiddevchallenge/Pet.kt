@@ -45,7 +45,7 @@ data class Pet(
         val desc1 = listOf("cute", "smart", "clever", "sturdy", "calm").random()
         val location = locations.random()
         val toy = listOf("ball", "box", "wool", "plate").random()
-        return "A $desc1 ${showSpecies()}, born in $location, $age years old now, " +
+        return "$name, A $desc1 ${showSpecies()}, born in $location, $age years old now, " +
                 "like to play with $toy, waiting for a new owner~"
     }
 }

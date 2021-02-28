@@ -89,9 +89,6 @@ fun PetList(
             }
         }
 
-        // Show the button if the first visible item is past
-        // the first item. We use a remembered derived state to
-        // minimize unnecessary compositions
         val showButton = listState.firstVisibleItemIndex > 0
 
         AnimatedVisibility(

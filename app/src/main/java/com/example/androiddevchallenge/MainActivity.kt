@@ -60,7 +60,7 @@ fun MyApp(petViewModel: PetViewModel) {
         }
         composable(
             "pet_detail/{petId}",
-            arguments = listOf(navArgument("petId") { type = NavType.StringType })
+            arguments = listOf(navArgument("petId") { type = NavType.IntType })
         ) { backStackEntry ->
             PetDetailScreen(
                 petViewModel,
