@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +62,17 @@ fun PetList(
             if (petGroup.isNotEmpty()) {
                 petGroup.keys.forEach { key ->
                     stickyHeader {
-                        Text(key, modifier = Modifier.padding(vertical = 4.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(colors.background)
+                        ) {
+                            Text(
+                                key,
+                                color = colors.onSecondary,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
                     }
                     items(petGroup[key] as List<Pet>) { pet ->
                         PetListItem(pet, modifier = Modifier.clickable {
@@ -110,7 +121,7 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
     val cd35 = CornerSize(35.dp)
     Card(
         elevation = 2.dp,
-        backgroundColor = Color.White,
+        backgroundColor = colors.onBackground,
         shape = RoundedCornerShape(cd6, cd6, cd6, cd6),
         modifier = modifier
     ) {
@@ -135,14 +146,13 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
                 Text(
                     pet.showSpecies(),
                     fontSize = 14.sp,
-                    color = Color.DarkGray,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
                     pet.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colors.onPrimary,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -152,9 +162,9 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
                     pet.showAge(),
                     modifier = Modifier.padding(end = 8.dp),
                     fontSize = 14.sp,
-                    color = Color.DarkGray,
+                    color = colors.onSecondary,
                 )
-                Text(pet.showSex(), fontSize = 14.sp, color = Color.DarkGray)
+                Text(pet.showSex(), fontSize = 14.sp, color = colors.onSecondary)
             }
         }
     }
@@ -166,7 +176,7 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
 fun ScrollToTopButton(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     FloatingActionButton(
         onClick = onClick,
-        backgroundColor = Color.White
+        backgroundColor = colors.onBackground
     ) {
         Box {
             Image(

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> Unit) {
+fun PetDetailScreen(petViewModel: PetViewModel, petId: Int, navigateBack: () -> Unit) {
     val pet = petViewModel.getPet(petId)
     val cs150 = CornerSize(100.dp)
     val showPetDialog = remember { mutableStateOf(false) }
@@ -29,7 +29,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
         backgroundColor = colors.background,
         topBar = {
             TopAppBar(
-                title = { Text("Pets") },
+                title = { Text("Pets", color = colors.surface) },
                 backgroundColor = colors.primary,
                 navigationIcon = {
                     IconButton(
@@ -39,7 +39,8 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_arrow_back_white_24dp),
-                            contentDescription = "filter"
+                            contentDescription = "filter",
+                            tint = colors.surface
                         )
                     }
                 }
@@ -57,10 +58,11 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                     .clip(shape = RoundedCornerShape(cs150, cs150, cs150, cs150))
             )
             Spacer(modifier = Modifier.height(16.dp))
+            val detail = remember { pet.showDetail() }
             Text(
-                text = pet.showDetail(),
+                text = detail,
                 fontSize = 20.sp,
-                color = Color.Black,
+                color = colors.onPrimary,
                 modifier = Modifier.padding(16.dp)
             )
             if (gotPet.value) {
@@ -74,6 +76,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                 )
                 Text(
                     text = "Congratulation!",
+                    color = colors.onPrimary,
                     modifier = Modifier
                         .padding(8.dp)
                         .align(Alignment.CenterHorizontally),
@@ -87,7 +90,10 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                         .padding(40.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
-                    Text(text = "Yes I want it!")
+                    Text(
+                        text = "Yes I want it!",
+                        color = colors.onPrimary,
+                    )
                 }
             }
             if (showPetDialog.value) {
@@ -99,7 +105,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                         showPetDialog.value = false
                     },
                     title = {
-                        Text(text = "Do you want this pet?")
+                        Text(text = "Do you want this pet?", color = colors.onPrimary)
                     },
                     text = {
                     },
@@ -109,7 +115,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                                 showPetDialog.value = false
                                 gotPet.value = true
                             }) {
-                            Text("Yes")
+                            Text("Yes", color = colors.onPrimary)
                         }
                     },
                     dismissButton = {
@@ -117,7 +123,7 @@ fun PetDetailScreen(petViewModel: PetViewModel, petId: Int,navigateBack: () -> U
                             onClick = {
                                 showPetDialog.value = false
                             }) {
-                            Text("Not sure now")
+                            Text("Not sure now", color = colors.onPrimary)
                         }
                     }
                 )

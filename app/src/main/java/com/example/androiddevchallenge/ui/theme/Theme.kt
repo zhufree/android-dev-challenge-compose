@@ -27,7 +27,10 @@ private val DarkColorPalette = darkColors(
     primaryVariant = purple700,
     secondary = teal200,
     background = Color.DarkGray,
-    onPrimary = Color.Black,
+    onPrimary = Color.White, // Main Text
+    onSecondary = Color.DarkGray, // Sub Text
+    onSurface = Color.DarkGray, // Top Bar Tint
+    onBackground = Color.Black // Item bg
 )
 
 private val LightColorPalette = lightColors(
@@ -35,7 +38,10 @@ private val LightColorPalette = lightColors(
     primaryVariant = purple700,
     secondary = teal200,
     background = lightGray,
-    onPrimary = Color.White,
+    onPrimary = Color.Black,
+    onSecondary = Color.DarkGray, // Sub Text
+    onSurface = Color.White, // Top Bar Tint
+    onBackground = Color.White // Item bg
 
 //    Other default colors to override
 //    surface = Color.White,

@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.example.androiddevchallenge.ui.theme.MyTheme
@@ -75,20 +76,22 @@ fun MyApp(petViewModel: PetViewModel) {
 
 
 
-//@ExperimentalAnimationApi
-//@Preview("Light Theme", widthDp = 360, heightDp = 640)
-//@Composable
-//fun LightPreview() {
-//    MyTheme {
-//        MyApp(null)
-//    }
-//}
+@ExperimentalFoundationApi
+@ExperimentalAnimationApi
+@Preview("Light Theme", widthDp = 360, heightDp = 640)
+@Composable
+fun LightPreview() {
+    MyTheme {
+        MyApp(PetViewModel())
+    }
+}
 
-//@ExperimentalAnimationApi
-//@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-//@Composable
-//fun DarkPreview() {
-//    MyTheme(darkTheme = true) {
-//        MyApp()
-//    }
-//}
+@ExperimentalFoundationApi
+@ExperimentalAnimationApi
+@Preview("Dark Theme", widthDp = 360, heightDp = 640)
+@Composable
+fun DarkPreview() {
+    MyTheme(darkTheme = true) {
+        MyApp(PetViewModel())
+    }
+}

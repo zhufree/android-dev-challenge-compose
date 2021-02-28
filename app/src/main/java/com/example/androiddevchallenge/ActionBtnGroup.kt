@@ -1,11 +1,9 @@
 package com.example.androiddevchallenge
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.androiddevchallenge.ui.theme.typography
+import com.example.androiddevchallenge.ui.theme.*
 
 @Composable
 fun ActionBtnGroup(
@@ -31,7 +29,8 @@ fun ActionBtnGroup(
             }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
-                contentDescription = "filter"
+                contentDescription = "filter",
+                tint = colors.surface
             )
         }
         IconButton(
@@ -40,7 +39,8 @@ fun ActionBtnGroup(
             }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_sort_white_24dp),
-                contentDescription = "sort"
+                contentDescription = "sort",
+                tint = colors.surface
             )
         }
     }
@@ -76,7 +76,9 @@ fun ShowDialog(
                     "Filter"
                 } else {
                     "Sort"
-                }
+                },
+                color = colors.onPrimary,
+                style = typography.subtitle1.merge()
             )
         },
         text = {
@@ -123,8 +125,10 @@ fun FilterCompose(
             ) {
                 Text(
                     text = filterTypeString,
-                    style = typography.h6.merge(),
+                    style = typography.body1.merge(),
+                    color = colors.onPrimary,
                 )
+                Spacer(modifier = Modifier.padding(bottom = 4.dp))
                 val index = filterTypeOptionString.indexOf(filterTypeString)
                 val optionString = if (index == PetConstants.FilterType.SEX) {
                     sexOptionString
@@ -136,21 +140,21 @@ fun FilterCompose(
                         val keyIndex = optionString.indexOf(filterKeywordString)
                         Row(
                             Modifier
-                            .selectable(
-                                selected = (if (filterTypeString == "Sex") {
-                                    selectedSexType == keyIndex
-                                } else {
-                                    selectedSpeciesType == keyIndex
-                                }),
-                                onClick = {
-                                    if (filterTypeString == "Sex") {
-                                        onSexTypeSelected(keyIndex)
+                                .selectable(
+                                    selected = (if (filterTypeString == "Sex") {
+                                        selectedSexType == keyIndex
                                     } else {
-                                        onSpeciesTypeSelected(keyIndex)
+                                        selectedSpeciesType == keyIndex
+                                    }),
+                                    onClick = {
+                                        if (filterTypeString == "Sex") {
+                                            onSexTypeSelected(keyIndex)
+                                        } else {
+                                            onSpeciesTypeSelected(keyIndex)
+                                        }
                                     }
-                                }
-                            )
-                            .padding(end = 16.dp)
+                                )
+                                .padding(end = 16.dp)
                         ) {
                             RadioButton(
                                 selected = (if (filterTypeString == "Sex") {
@@ -168,7 +172,7 @@ fun FilterCompose(
                             )
                             Text(
                                 text = filterKeywordString,
-                                style = typography.body1.merge(),
+                                color = colors.onSecondary,
                                 modifier = Modifier.padding(start = 8.dp)
                             )
                         }
@@ -204,7 +208,8 @@ fun SortCompose(
                 )
                 Text(
                     text = text,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = colors.onPrimary
                 )
             }
         }
