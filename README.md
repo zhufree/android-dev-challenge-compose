@@ -1,4 +1,4 @@
-# Put title of your app here
+# Puppy
 
 <!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
 <!--- You can find both of these in the url bar when you open your repository in github. -->
@@ -7,13 +7,14 @@
 
 ## :scroll: Description
 <!--- Describe your app in one or two sentences -->
-A puppy adoption app!
-Include an overview screen that displays a list of puppies, and a detail screen showing each good doggo's details.
+A pet adoption app!
+Include an overview screen that displays a list of pets, and a detail screen showing each good pet's details.
 
 ## :bulb: Motivation and Context
 <!--- Optionally point readers to interesting parts of your submission. -->
 <!--- What are you especially proud of? -->
 Read the #AndroidDevChallenge article and decided to learn Compose right now!
+The pictures of cute cats and dogs are from https://partyanimalsgame.com/.
 
 
 ## :camera_flash: Screenshots
