@@ -4,10 +4,12 @@ object PetConstants {
     object Species {
         const val CAT = 0
         const val DOG = 1
+        const val ALL = 2
     }
     object Sex {
         const val FEMALE = 0
         const val MALE = 1
+        const val ALL = 2
     }
     object SortType {
         const val AGE = "Age"

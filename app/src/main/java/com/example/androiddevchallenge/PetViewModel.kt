@@ -5,12 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.text.substring
 import androidx.lifecycle.ViewModel
-import com.example.androiddevchallenge.PetConstants.FilterType.SEX
-import com.example.androiddevchallenge.PetConstants.FilterType.SPECIES
+import com.example.androiddevchallenge.PetConstants.Sex.FEMALE
+import com.example.androiddevchallenge.PetConstants.Sex.MALE
 import com.example.androiddevchallenge.PetConstants.SortType.AGE
 import com.example.androiddevchallenge.PetConstants.SortType.NAME
+import com.example.androiddevchallenge.PetConstants.Species.CAT
+import com.example.androiddevchallenge.PetConstants.Species.DOG
 
 class PetViewModel : ViewModel() {
     // LiveData holds state which is observed by the UI
@@ -24,10 +25,11 @@ class PetViewModel : ViewModel() {
 
 
     @Composable
-    fun createList() {
+    fun CreateList() {
         rawList = generatePetList()
         petList = rawList
     }
+
     // onNameChanged is an event we're defining that the UI can invoke
     // (events flow up from UI)
     fun sortList(sortType: String) {
@@ -38,18 +40,26 @@ class PetViewModel : ViewModel() {
             }
             NAME -> {
                 petList = rawList.sortedBy { it.name }
-                petGroup = rawList.groupBy { it.name.substring(0,1) }
+                petGroup = rawList.groupBy { it.name.substring(0, 1) }
             }
         }
     }
 
-    fun filterList(filterType: Int, keyword: Int) {
-        when(filterType) {
-            SEX -> {
-                petList = rawList.filter { it.sex == keyword }
+    fun filterList(sexType: Int, speciesType: Int) {
+        petList = when (sexType) {
+            MALE, FEMALE -> {
+                rawList.filter { it.sex == sexType }
             }
-            SPECIES -> {
-                petList = rawList.filter { it.species == keyword }
+            else -> {
+                rawList
+            }
+        }
+        petList = when (speciesType) {
+            CAT, DOG -> {
+                petList.filter { it.species == speciesType }
+            }
+            else -> {
+                petList
             }
         }
     }
@@ -59,14 +69,14 @@ class PetViewModel : ViewModel() {
 fun randomPet(): Pet {
     val name = PetConstants.names.random()
     val age = arrayOf(0, 1, 2, 3, 4, 5).random()
-    val species = arrayOf(PetConstants.Species.CAT, PetConstants.Species.DOG).random()
-    val sex = arrayOf(PetConstants.Sex.FEMALE, PetConstants.Sex.MALE).random()
+    val species = arrayOf(CAT, DOG).random()
+    val sex = arrayOf(FEMALE, MALE).random()
     val headUrl = remember(name) {
         when (species) {
-            PetConstants.Species.CAT -> {
+            CAT -> {
                 PetConstants.catHeadImgs.random()
             }
-            PetConstants.Species.DOG -> {
+            DOG -> {
                 PetConstants.dogHeadImgs.random()
             }
             else -> {

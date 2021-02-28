@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.PetConstants.FilterType.SEX
 import com.example.androiddevchallenge.PetConstants.FilterType.SPECIES
+import com.example.androiddevchallenge.PetConstants.Sex.ALL
 import com.example.androiddevchallenge.PetConstants.Sex.FEMALE
 import com.example.androiddevchallenge.PetConstants.Sex.MALE
 import com.example.androiddevchallenge.PetConstants.Species.CAT
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                petViewModel.createList()
+                petViewModel.CreateList()
                 MyApp(petViewModel)
             }
         }
@@ -96,22 +97,22 @@ fun ActionBtnGroup(
     val showFilterDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     Row {
-//        IconButton(
-//            onClick = {
-//                showFilterDialog.value = true
-//            }) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
-//                contentDescription = "filter"
-//            )
-//        }
+        IconButton(
+            onClick = {
+                showFilterDialog.value = true
+            }) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_filter_alt_white_24dp),
+                contentDescription = "filter"
+            )
+        }
         IconButton(
             onClick = {
                 showSortDialog.value = true
             }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_sort_white_24dp),
-                contentDescription = "filter"
+                contentDescription = "sort"
             )
         }
     }
@@ -132,10 +133,8 @@ fun showDialog(
     val sortOptions = listOf("Age", "Name")
     val filterOptions = listOf(SEX, SPECIES)
     val (selectedSortOption, onSortOptionSelected) = remember { mutableStateOf(sortOptions[0]) }
-    val (selectedFilterOption, onFilterOptionSelected) = remember { mutableStateOf(SEX) }
-    val (filterKeywordOption, onFilterKeywordSelected) = remember {
-        mutableStateOf(mapOf(0 to 0, 1 to 0).toMutableMap())
-    }
+    val (selectedSexOption, onSexOptionSelected) = remember { mutableStateOf(ALL) }
+    val (selectedSpeciesOption, onSpeciesOptionSelected) = remember { mutableStateOf(ALL) }
 
     AlertDialog(
         onDismissRequest = {
@@ -154,21 +153,21 @@ fun showDialog(
             )
         },
         text = {
-//            if (type == 0) {
-//                FilterCompose(
-//                    filterOptions, selectedFilterOption, onFilterOptionSelected,
-//                    filterKeywordOption, onFilterKeywordSelected
-//                )
-//            } else {
+            if (type == 0) {
+                FilterCompose(
+                    selectedSexOption, onSexOptionSelected,
+                    selectedSpeciesOption, onSpeciesOptionSelected
+                )
+            } else {
                 SortCompose(sortOptions, selectedSortOption, onSortOptionSelected)
-//            }
+            }
         },
         confirmButton = {
             Button(
                 onClick = {
                     showFlag.value = false
                     if (type == 0) {
-                        onFilter(selectedFilterOption, filterKeywordOption[selectedFilterOption]!!)
+                        onFilter(selectedSexOption, selectedSpeciesOption)
                     } else {
                         onSort(selectedSortOption)
                     }
@@ -182,17 +181,16 @@ fun showDialog(
 
 @Composable
 fun FilterCompose(
-    filterTypeOptions: List<Int>,
-    selectedFilterType: Int,
-    onFilterTypeSelected: (Int) -> Unit,
-    selectedFilterKeyword: MutableMap<Int, Int>,
-    onFilterKeywordSelected: (MutableMap<Int, Int>) -> Unit,
+    selectedSexType: Int,
+    onSexTypeSelected: (Int) -> Unit,
+    selectedSpeciesType: Int,
+    onSpeciesTypeSelected: (Int) -> Unit,
 ) {
     val filterTypeOptionString = listOf("Sex", "Species")
     val sexOption = listOf(FEMALE, MALE)
-    val sexOptionString = listOf("Female", "Male")
+    val sexOptionString = listOf("Female", "Male", "All")
     val speciesOption = listOf(CAT, DOG)
-    val speciesOptionString = listOf("Cat", "Dog")
+    val speciesOptionString = listOf("Cat", "Dog", "All")
     Column {
         filterTypeOptionString.forEach { filterTypeString ->
             Column(
@@ -214,29 +212,37 @@ fun FilterCompose(
                     speciesOptionString
                 }
                 Row {
-                    optionString.forEach { filterKeywordString -> //0,1 / 0,1
+                    optionString.forEach { filterKeywordString ->
                         val keyIndex = optionString.indexOf(filterKeywordString)
                         Row(Modifier
                             .selectable(
-                                selected = (filterKeywordString == optionString[keyIndex]),
+                                selected = (if (filterTypeString == "Sex") {
+                                    selectedSexType == keyIndex
+                                } else {
+                                    selectedSpeciesType == keyIndex
+                                }),
                                 onClick = {
-                                    onFilterTypeSelected(index)
-                                    selectedFilterKeyword[index] = keyIndex
-//                                    onFilterKeywordSelected(selectedFilterKeyword)
-                                    println("select filter type: $selectedFilterType")
-                                    println("select filter keyword: $selectedFilterKeyword")
-                                    println("filter keyword: $filterKeywordString")
-                                    println("light: ${filterKeywordString == optionString[keyIndex]}")
+                                    if (filterTypeString == "Sex") {
+                                        onSexTypeSelected(keyIndex)
+                                    } else {
+                                        onSpeciesTypeSelected(keyIndex)
+                                    }
                                 }
                             )
                             .padding(end = 16.dp)
                         ) {
-                            Switch(
-                                checked = selectedFilterKeyword[index] == keyIndex,
-                                onCheckedChange = {
-                                    onFilterTypeSelected(index)
-                                    selectedFilterKeyword[index] = keyIndex
-                                    onFilterKeywordSelected(selectedFilterKeyword)
+                            RadioButton(
+                                selected = (if (filterTypeString == "Sex") {
+                                    selectedSexType == keyIndex
+                                } else {
+                                    selectedSpeciesType == keyIndex
+                                }),
+                                onClick = {
+                                    if (filterTypeString == "Sex") {
+                                        onSexTypeSelected(keyIndex)
+                                    } else {
+                                        onSpeciesTypeSelected(keyIndex)
+                                    }
                                 }
                             )
                             Text(
