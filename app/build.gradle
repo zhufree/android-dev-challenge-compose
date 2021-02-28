@@ -38,6 +38,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xallow-unstable-dependencies"
     }
 
     buildFeatures {
@@ -75,8 +76,11 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
     // Integration with observables
-    implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta01'
-    implementation 'androidx.compose.runtime:runtime-rxjava2:1.0.0-beta01'
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation "androidx.compose.runtime:runtime-rxjava2:$compose_version"
+    implementation "androidx.compose.foundation:foundation:1.0.0-beta01"
+
+    implementation "androidx.navigation:navigation-compose:1.0.0-alpha08"
 
     testImplementation 'junit:junit:4.13.2'
 

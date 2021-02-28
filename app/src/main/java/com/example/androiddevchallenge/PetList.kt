@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -42,72 +43,41 @@ fun PetListPreview() {
 @ExperimentalAnimationApi
 @Composable
 fun PetList(
+    navigateToPetDetail: (petId: Int) -> Unit,
     pets: List<Pet>,
-    petGroup : Map<String, List<Pet>>,
+    petGroup: Map<String, List<Pet>>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
         val listState = rememberLazyListState()
         val scope = rememberCoroutineScope()
-        val showPetDialog = remember { mutableStateOf(false) }
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(bottom = 80.dp, start = 8.dp, end = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp, start = 8.dp, end = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray)
         ) {
             if (petGroup.isNotEmpty()) {
                 petGroup.keys.forEach { key ->
                     stickyHeader {
                         Text(key, modifier = Modifier.padding(vertical = 4.dp))
                     }
-                    items(petGroup[key] as List<Pet>) {pet ->
+                    items(petGroup[key] as List<Pet>) { pet ->
                         PetListItem(pet, modifier = Modifier.clickable {
-                            showPetDialog.value = true
+                            navigateToPetDetail(pets.indexOf(pet))
                         })
                     }
                 }
             } else {
                 items(pets) { pet ->
                     PetListItem(pet, modifier = Modifier.clickable {
-                        showPetDialog.value = true
+                        navigateToPetDetail(pets.indexOf(pet))
                     })
                 }
             }
         }
-        if (showPetDialog.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    // Dismiss the dialog when the user clicks outside the dialog or on the back
-                    // button. If you want to disable that functionality, simply use an empty
-                    // onCloseRequest.
-                    showPetDialog.value = false
-                },
-                title = {
-                    Text(text = "Do you want this pet?")
-                },
-                text = {
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showPetDialog.value = false
-                        }) {
-                        Text("Yes")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            showPetDialog.value = false
-                        }) {
-                        Text("Not sure now")
-                    }
-                }
-            )
-        }
+
         // Show the button if the first visible item is past
         // the first item. We use a remembered derived state to
         // minimize unnecessary compositions
@@ -136,10 +106,12 @@ fun PetList(
 
 @Composable
 fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
+    val cd6 = CornerSize(6.dp)
+    val cd35 = CornerSize(35.dp)
     Card(
         elevation = 2.dp,
         backgroundColor = Color.White,
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(cd6, cd6, cd6, cd6),
         modifier = modifier
     ) {
         Column(
@@ -154,7 +126,7 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(70.dp, 70.dp)
                     .align(Alignment.CenterHorizontally)
-                    .clip(shape = RoundedCornerShape(35.dp))
+                    .clip(shape = RoundedCornerShape(cd35, cd35, cd35, cd35))
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -163,12 +135,14 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
                 Text(
                     pet.showSpecies(),
                     fontSize = 14.sp,
+                    color = Color.DarkGray,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
                     pet.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -177,9 +151,10 @@ fun PetListItem(pet: Pet, modifier: Modifier = Modifier) {
                 Text(
                     pet.showAge(),
                     modifier = Modifier.padding(end = 8.dp),
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    color = Color.DarkGray,
                 )
-                Text(pet.showSex(), fontSize = 14.sp)
+                Text(pet.showSex(), fontSize = 14.sp, color = Color.DarkGray)
             }
         }
     }

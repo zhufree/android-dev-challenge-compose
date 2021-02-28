@@ -30,17 +30,21 @@ class PetViewModel : ViewModel() {
         petList = rawList
     }
 
+    fun getPet(petId: Int) : Pet{
+        return petList[petId]
+    }
+
     // onNameChanged is an event we're defining that the UI can invoke
     // (events flow up from UI)
     fun sortList(sortType: String) {
         when (sortType) {
             AGE -> {
                 petList = rawList.sortedBy { it.age }
-                petGroup = rawList.groupBy { it.age.toString() }
+                petGroup = petList.groupBy { it.age.toString() }
             }
             NAME -> {
                 petList = rawList.sortedBy { it.name }
-                petGroup = rawList.groupBy { it.name.substring(0, 1) }
+                petGroup = petList.groupBy { it.name.substring(0, 1) }
             }
         }
     }
